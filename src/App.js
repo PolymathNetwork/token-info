@@ -2,15 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import { fetchInfo } from './ti';
 import Token from './Token';
-import { makeStyles } from '@material-ui/core/styles';
 import STRAbi from './abis/SecurityTokenRegistry.json';
 import './App.css';
-
-const useStyles = makeStyles(theme => ({
-  progress: {
-    margin: theme.spacing(2),
-  },
-}));
+import { Button } from 'polymath-ui';
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -87,7 +81,6 @@ function App() {
     setLoading(false);
   }
 
-  const classes = useStyles();
   return (
     <div className="App">
       <header className="App-header">
@@ -96,7 +89,7 @@ function App() {
           name="ticker"
           value={ticker}
           onChange={changeHandler} />
-        <button onClick={submitHandler}>Submit</button>
+        <Button onClick={submitHandler}>Submit</Button>
         { tokenInfo && <Token {...tokenInfo} />}
         { loading &&  <span>Loading...</span> }
         {/* @TODO display all errors */}

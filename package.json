@@ -5,6 +5,7 @@
   "dependencies": {
     "@tokenfoundry/react-metamask": "^0.4.0",
     "dapparatus": "^1.0.91",
+    "polymath-ui": "github:PolymathNetwork/polymath-ui",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
