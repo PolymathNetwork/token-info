@@ -17,7 +17,10 @@ export default function Token({ owner,
     transferModules,
     stoModules,
     checkpointModules,
-    burnModules }) {
+    burnModules,
+    dataModules,
+    walletModules
+ }) {
     return (
         <table>
             <tbody>
@@ -70,10 +73,6 @@ export default function Token({ owner,
                     <td>{currentCheckpointId}</td>
                 </tr>
                 <tr>
-                    <td>STOs</td>
-                    <td>{stoModules.join(', ') || 'None'}</td>
-                </tr>
-                <tr>
                     <td>Permission modules</td>
                     <td>{permissionModules.join(', ') || 'None'}</td>
                 </tr>
@@ -82,12 +81,24 @@ export default function Token({ owner,
                     <td>{transferModules.join(', ') || 'None'}</td>
                 </tr>
                 <tr>
+                    <td>STOs</td>
+                    <td>{stoModules.join(', ') || 'None'}</td>
+                </tr>
+                <tr>
                     <td>Dividend modules</td>
                     <td>{checkpointModules.join(', ') || 'None'}</td>
                 </tr>
                 <tr>
                     <td>Burn modules</td>
                     <td>{burnModules.join(', ') || 'None'}</td>
+                </tr>
+                <tr>
+                    <td>Data Storage modules</td>
+                    <td>{dataModules.join(', ') || 'None'}</td>
+                </tr>
+                <tr>
+                    <td>Wallet modules</td>
+                    <td>{walletModules.join(', ') || 'None'}</td>
                 </tr>
             </tbody>
         </table>

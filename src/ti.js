@@ -56,6 +56,8 @@ export async function fetchInfo(web3, str, ticker) {
         calls.push(token.methods.getModulesByType(5).call);
         calls.push(token.methods.getModulesByType(6).call);
         calls.push(token.methods.getModulesByType(7).call);
+        calls.push(token.methods.getModulesByType(8).call);
+        calls.push(token.methods.getModulesByType(9).call);
     }
    
 
@@ -99,8 +101,8 @@ export async function fetchInfo(web3, str, ticker) {
         15: stoModules,
         16: checkpointModules,
         17: burnModules,
-        // 18: dataModules,
-        // 19: walletModules
+        18: dataModules,
+        19: walletModules
     } = result;
 
     return {      
@@ -122,7 +124,7 @@ export async function fetchInfo(web3, str, ticker) {
         stoModules,
         checkpointModules,
         burnModules,
-        // dataModules,
-        // walletModules
+        dataModules,
+        walletModules
     }
 }
