@@ -1,19 +1,22 @@
-const securityToken2ABI = require('./abis/SecurityToken-2.json');
-const securityToken3ABI = require('./abis/SecurityToken-3.json');
+import securityToken2ABI from './abis/SecurityToken-2.json';
+import securityToken3ABI from './abis/SecurityToken-3.json';
+import { zero_address } from './constants';
 
 export async function fetchInfo(web3, str, ticker) {
     let calls = [];
     let batch = [];
-    const tokenAddress = await  str.methods.getSecurityTokenAddress(ticker).call();
-    console.log('tokenAddress', tokenAddress);
+    let tokenAddress = await str.methods.getSecurityTokenAddress(ticker).call();
+
+    if (tokenAddress === zero_address) {
+        throw new Error('Symbol does not exist') 
+    }
 
     let token = new web3.eth.Contract(securityToken3ABI, tokenAddress);
     const version = await token.methods.getVersion().call();
     batch.push(new web3.BatchRequest());
 
-    console.log(version[0])
-
-    if (version[0] === 2) {
+    // @TODO handle even older tokens
+    if (version[0] === '2') {
         token = new web3.eth.Contract(securityToken2ABI, tokenAddress);
         calls.push(token.methods.owner().call);
         calls.push(token.methods.name().call);
@@ -82,7 +85,7 @@ export async function fetchInfo(web3, str, ticker) {
     // DATA_KEY = 6;
     // WALLET_KEY = 7;
 
-    const {
+    let {
         0: owner,
         1: name,
         2: versionArray,
@@ -96,16 +99,18 @@ export async function fetchInfo(web3, str, ticker) {
         10: controller,
         11: getInvestorCount,
         12: currentCheckpointId,
-        13: permissionModules,
-        14: transferModules,
-        15: stoModules,
-        16: checkpointModules,
-        17: burnModules,
-        18: dataModules,
-        19: walletModules
+        13: permission,
+        14: transfer,
+        15: sto,
+        16: checkpoint,
+        17: burn,
+        18: data,
+        19: wallet
     } = result;
 
-    return {      
+    data = data ? data : [];
+    wallet = wallet ? wallet : [];
+    const props = {      
         owner,
         name,
         versionArray,
@@ -119,12 +124,15 @@ export async function fetchInfo(web3, str, ticker) {
         controller,
         getInvestorCount,
         currentCheckpointId,
-        permissionModules,
-        transferModules,
-        stoModules,
-        checkpointModules,
-        burnModules,
-        dataModules,
-        walletModules
-    }
+        modules: {
+            permission,
+            transfer,
+            sto,
+            checkpoint,
+            burn,
+            data,
+            wallet
+        }
+    };
+    return props;
 }

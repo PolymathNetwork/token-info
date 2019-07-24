@@ -4,16 +4,18 @@ import { fetchInfo } from './ti';
 import Token from './Token';
 import STRAbi from './abis/SecurityTokenRegistry.json';
 import './App.css';
-import { Button } from 'polymath-ui';
+import { STR_MAINNET, STR_KOVAN } from './constants';
 
 function App() {
   const [loading, setLoading] = useState(false);
-  const [web3, setWeb3] = useState(undefined);
-  const [str, setStr] = useState(undefined);
+  const [web3, setWeb3] = useState();
+  const [str, setStr] = useState();
   const [ticker, setTicker] = useState('');
   const [errors, setErrors] = useState([]);
-  const [tokenInfo, setTokenInfo] = useState(undefined);
-  
+  const [tokenInfo, setTokenInfo] = useState();
+  const [network, setNetwork] = useState('');
+  const [etherscanUrl, setEtherscanUrl] = useState('');
+
   useEffect(() => {
     async function initWeb3() {
       let web3
@@ -27,29 +29,32 @@ function App() {
       }
       else if (window.web3) {
         web3 = new Web3(web3.currentProvider);
-        console.log('else if (window.web3)')
       }
       else {
-        alert('You have to install MetaMask !');
+        setErrors(['You have to install MetaMask !']);
       }
 
       /////
       
+      let str;
       if (web3) {
-        let securityTokenRegistryAddress, urlDomain;
-        let str
         const chainId = await web3.eth.net.getId()
-        console.log(chainId)
-        if (chainId == 1) {  //Mainnet
-            securityTokenRegistryAddress = "0x240f9f86b1465bf1b8eb29bc88cbf65573dfdd97";
-            str = new web3.eth.Contract(STRAbi, securityTokenRegistryAddress);
-            urlDomain = 'api';
-        } else if (chainId == 42) {  //Kovan
-            securityTokenRegistryAddress = "0x91110c2f67e2881a8540417be9eadf5bc9f2f248";
-            str = new web3.eth.Contract(STRAbi, securityTokenRegistryAddress);
-            urlDomain = 'api-kovan';
+        if (chainId === 1) {
+            str = new web3.eth.Contract(STRAbi, STR_MAINNET);
+            setStr(str);
+            setNetwork('mainnet');
+            setEtherscanUrl('https://etherscan.io/address');
+        } else if (chainId === 42) {
+            str = new web3.eth.Contract(STRAbi, STR_KOVAN);
+            setStr(str)
+            setNetwork('kovan');
+            setEtherscanUrl('https://kovan.etherscan.io/address')
         } else {
-            window.alert('Invalid network');
+            setErrors(["Network that you chose is not supported.\n" +
+            "Open MetaMask and choose Mainnet or Kovan."]);
+            setStr();
+            setNetwork();
+            setEtherscanUrl();
             return;
         }
 
@@ -66,16 +71,15 @@ function App() {
     setTicker(event.target.value);
   }
 
-  const submitHandler = async () => {
+  const submitHandler = async (e) => {
+    e.preventDefault();
     setLoading(true);
+    setTokenInfo(undefined);
     try {
       const tokenInfo = await fetchInfo(web3, str, ticker);
-      console.log('Fetched tokenInfo', tokenInfo);
       setTokenInfo(tokenInfo);
       setErrors([]);
-      console.log(tokenInfo)
     } catch (error) {
-      setTokenInfo(undefined);
       setErrors([error.message]);
     }
     setLoading(false);
@@ -84,16 +88,19 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <input 
-          type="text"
-          name="ticker"
-          value={ticker}
-          onChange={changeHandler} />
-        <Button onClick={submitHandler}>Submit</Button>
-        { tokenInfo && <Token {...tokenInfo} />}
-        { loading &&  <span>Loading...</span> }
-        {/* @TODO display all errors */}
-        { errors && <div>{errors[0]}</div>}
+        <form onSubmit={submitHandler}>
+          <input 
+            type="text"
+            name="ticker"
+            value={ticker}
+            disabled={!network}
+            onChange={changeHandler} />
+          <input type="submit" value="Submit" disabled={!ticker || !network} />
+          { tokenInfo && <Token {...tokenInfo} etherscanUrl={etherscanUrl} />}
+          { loading &&  <span>Loading...</span> }
+          {/* @TODO display all errors */}
+          { errors && <div>{errors[0]}</div>}
+        </form>
       </header>
     </div>
   );

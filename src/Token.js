@@ -1,4 +1,9 @@
 import React from 'react';
+import Web3 from 'web3';
+
+export function EtherscanLink({ prefix, address }) {
+    return <div><a href={`${prefix}/${address}`}>{address}</a></div>;
+}
 
 export default function Token({ owner,
     name,
@@ -13,20 +18,27 @@ export default function Token({ owner,
     controller,
     getInvestorCount,
     currentCheckpointId,
-    permissionModules,
-    transferModules,
-    stoModules,
-    checkpointModules,
-    burnModules,
-    dataModules,
-    walletModules
+    modules,
+    etherscanUrl
  }) {
+    let m = Object.assign({}, modules);
+    totalSupply = Web3.utils.fromWei(totalSupply);
+    Object.keys(m).forEach((key) => {
+        m[key] = m[key].map((address) => {
+            return <EtherscanLink key={key} prefix={etherscanUrl} address={address} />
+        });
+    })
+
     return (
         <table>
             <tbody>
                 <tr>
                     <td>name</td>
                     <td>{name}</td>
+                </tr>
+                <tr>
+                    <td>owner</td>
+                    <td>{owner}</td>
                 </tr>
                 <tr>
                     <td>Version</td>
@@ -46,11 +58,11 @@ export default function Token({ owner,
                 </tr>
                 <tr>
                     <td>Total Supply</td>
-                    <td>{totalSupply}</td>
+                    <td>{totalSupply} {symbol}</td>
                 </tr>
                 <tr>
                     <td>Transfers Frozen?</td>
-                    <td>{transfersFrozen}</td>
+                    <td>{transfersFrozen? 'True' : 'False'}</td>
                 </tr>
                 <tr>
                     <td>Issuable?</td>
@@ -72,33 +84,34 @@ export default function Token({ owner,
                     <td>Current Checkpoint Id</td>
                     <td>{currentCheckpointId}</td>
                 </tr>
+
                 <tr>
                     <td>Permission modules</td>
-                    <td>{permissionModules.join(', ') || 'None'}</td>
+                    <td>{m.permission}</td>
                 </tr>
                 <tr>
                     <td>Transfer modules</td>
-                    <td>{transferModules.join(', ') || 'None'}</td>
+                    <td>{m.transfer}</td>
                 </tr>
                 <tr>
                     <td>STOs</td>
-                    <td>{stoModules.join(', ') || 'None'}</td>
+                    <td>{m.sto}</td>
                 </tr>
                 <tr>
                     <td>Dividend modules</td>
-                    <td>{checkpointModules.join(', ') || 'None'}</td>
+                    <td>{m.checkpoint}</td>
                 </tr>
                 <tr>
                     <td>Burn modules</td>
-                    <td>{burnModules.join(', ') || 'None'}</td>
+                    <td>{m.burn}</td>
                 </tr>
                 <tr>
                     <td>Data Storage modules</td>
-                    <td>{dataModules.join(', ') || 'None'}</td>
+                    <td>{m.data}</td>
                 </tr>
                 <tr>
                     <td>Wallet modules</td>
-                    <td>{walletModules.join(', ') || 'None'}</td>
+                    <td>{m.wallet}</td>
                 </tr>
             </tbody>
         </table>
