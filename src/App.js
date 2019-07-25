@@ -110,7 +110,7 @@ function App() {
   }, []);
 
   const changeHandler = name => event => {
-    setTicker(event.target.value);
+    setTicker(event.target.value.toUpperCase());
   }
 
   const submitHandler = async (e) => {
@@ -132,6 +132,7 @@ function App() {
       <Container maxWidth="sm" className="root">
         <form onSubmit={submitHandler}>
           <TextField
+            value={ticker}
             style={{ margin: 8 }}
             placeholder="TICKER"
             fullWidth
