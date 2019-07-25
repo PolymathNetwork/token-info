@@ -910,23 +910,23 @@
     "name": "getModule",
     "outputs": [
       {
-        "name": "",
+        "name": "moduleName",
         "type": "bytes32"
       },
       {
-        "name": "",
+        "name": "moduleAddress",
         "type": "address"
       },
       {
-        "name": "",
+        "name": "factoryAddress",
         "type": "address"
       },
       {
-        "name": "",
+        "name": "isArchived",
         "type": "bool"
       },
       {
-        "name": "",
+        "name": "moduleTypes",
         "type": "uint8[]"
       }
     ],

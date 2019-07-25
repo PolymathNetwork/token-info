@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField';
 
 import { fetchInfo } from './ti';
 import Token from './Token';
-import STRAbi from './abis/SecurityTokenRegistry.json';
+import SecurityTokenRegistryABI from './abis/SecurityTokenRegistry.json'
 import './App.css';
 import { STR_MAINNET, STR_KOVAN } from './constants';
 
@@ -82,12 +82,12 @@ function App() {
       if (web3) {
         const chainId = await web3.eth.net.getId()
         if (chainId === 1) {
-            str = new web3.eth.Contract(STRAbi, STR_MAINNET);
+            str = new web3.eth.Contract(SecurityTokenRegistryABI, STR_MAINNET);
             setStr(str);
             setNetwork('mainnet');
             setEtherscanUrl('https://etherscan.io/address');
         } else if (chainId === 42) {
-            str = new web3.eth.Contract(STRAbi, STR_KOVAN);
+            str = new web3.eth.Contract(SecurityTokenRegistryABI, STR_KOVAN);
             setStr(str)
             setNetwork('kovan');
             setEtherscanUrl('https://kovan.etherscan.io/address')
@@ -109,14 +109,19 @@ function App() {
     initWeb3();
   }, []);
 
-  const changeHandler = name => event => {
-    setTicker(event.target.value.toUpperCase());
+  const changeHandler = event => {
+
+    const pattern = RegExp('^[a-zA-Z0-9_]*$');
+    if (pattern.test(event.target.value)) {
+      setTicker(event.target.value.toUpperCase());
+    }
   }
 
   const submitHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTokenInfo(undefined);
+    setError();
+    setTokenInfo();
     try {
       const tokenInfo = await fetchInfo(web3, str, ticker);
       setTokenInfo(tokenInfo);
@@ -141,7 +146,7 @@ function App() {
               maxLength: 10
             }}
             disabled={!network}
-            onChange={changeHandler('ticker')}
+            onChange={changeHandler}
           />
 
           <div className={classes.wrapper}>

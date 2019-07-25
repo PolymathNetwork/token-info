@@ -1,5 +1,5 @@
-import securityToken2ABI from './abis/SecurityToken-2.json';
-import securityToken3ABI from './abis/SecurityToken-3.json';
+import securityToken2ABI from './abis/SecurityToken2.json';
+import securityToken3ABI from './abis/SecurityToken3.json';
 import { zero_address } from './constants';
 
 export async function fetchInfo(web3, str, ticker) {
@@ -15,7 +15,6 @@ export async function fetchInfo(web3, str, ticker) {
     const version = await token.methods.getVersion().call();
     batch.push(new web3.BatchRequest());
 
-    // @TODO handle even older tokens
     if (version[0] === '2') {
         token = new web3.eth.Contract(securityToken2ABI, tokenAddress);
         calls.push(token.methods.owner().call);
@@ -38,7 +37,7 @@ export async function fetchInfo(web3, str, ticker) {
         calls.push(token.methods.getModulesByType(4).call);
         calls.push(token.methods.getModulesByType(5).call);
     }
-    else {
+    else if (version[0] === '3') {
         let token = new web3.eth.Contract(securityToken3ABI, tokenAddress);
         calls.push(token.methods.owner().call);
         calls.push(token.methods.name().call);
@@ -64,7 +63,9 @@ export async function fetchInfo(web3, str, ticker) {
         calls.push(token.methods.getModulesByType(8).call);
         calls.push(token.methods.getModulesByType(9).call);
     }
-   
+    else {
+        throw new Error(`Token version ${version.join('.')} is not supported.`) 
+    }
 
     let promises = calls.map(call => {
         return new Promise((res, rej) => {
@@ -86,6 +87,17 @@ export async function fetchInfo(web3, str, ticker) {
     // BURN_KEY = 5;
     // DATA_KEY = 6;
     // WALLET_KEY = 7;
+
+    const modulesMap = [
+        '',
+        'permission',
+        'transfer',
+        'sto',
+        'checkpoint',
+        'burn',
+        'data',
+        'wallet'
+    ]
 
     let {
         0: owner,
@@ -113,6 +125,41 @@ export async function fetchInfo(web3, str, ticker) {
 
     data = data ? data : [];
     wallet = wallet ? wallet : [];
+
+    const modules = [
+        permission,
+        transfer,
+        sto,
+        checkpoint,
+        burn,
+        data,
+        wallet
+    ];
+
+    const modulesDetails = [];
+
+    for (const moduleAdresses of modules) {
+        for (const moduleAddress of moduleAdresses) {
+            let moduleDetails = await token.methods.getModule(moduleAddress).call();
+            moduleDetails.moduleName = web3.utils.hexToUtf8(moduleDetails.moduleName);
+            moduleDetails.label = moduleDetails.label ?
+                web3.utils.hexToUtf8(moduleDetails.label) :
+                '';
+            moduleDetails.moduleTypes = modulesMap[moduleDetails.moduleTypes[0]];
+            modulesDetails.push(moduleDetails);
+        }
+    }
+
+    const uniqueModules = [];
+    const map = new Map();
+    for (const item of modulesDetails) {
+        if(!map.has(item.moduleAddress)){
+            map.set(item.moduleAddress, true); 
+            uniqueModules.push(item);
+        }
+    }
+
+
     const props = {   
         address: tokenAddress,
         owner,
@@ -129,15 +176,7 @@ export async function fetchInfo(web3, str, ticker) {
         getInvestorCount,
         currentCheckpointId,
         decimals,
-        modules: {
-            permission,
-            transfer,
-            sto,
-            checkpoint,
-            burn,
-            data,
-            wallet
-        }
+        modulesDetails: uniqueModules
     };
     return props;
 }

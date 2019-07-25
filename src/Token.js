@@ -1,10 +1,9 @@
 import React from 'react';
-import Web3 from 'web3';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
@@ -20,6 +19,9 @@ const useStyles = makeStyles(theme => ({
     },
     table: {
         width: '100%'
+    },
+    modules: {
+        marginTop: 50
     }
 }));
 
@@ -32,23 +34,51 @@ export function Row({label, value}) {
     return (
         <TableRow>
             <TableCell style={{minWidth: 180}}>
-                <Typography variant="button" display="block">{label}</Typography>
+                <Typography variant="button">{label}</Typography>
             </TableCell>
             <TableCell>{value}</TableCell>
         </TableRow>
     );
 }
 
-// export function Label({children}) {
-//     return <TableCell><Typography variant="button" display="block">{children}</Typography></TableCell>
-// }
-
-// export function Value({children, monospace}) {
-//     return <TableCell><Box fontFamily={monospace ? "Monospace" : "fontFamily"}>{children}</Box></TableCell>
-// }
-
 function _bool(val) {
     return val ? 'true' : 'false';
+}
+
+function Module({etherscanUrl, moduleAddress, moduleName, factoryAddress, label, isArchived, moduleTypes}) {
+  return (
+    <TableRow>
+        <TableCell>
+            <Typography variant="button">{moduleTypes}</Typography>
+        </TableCell>
+        <TableCell>{moduleName}</TableCell>
+        <TableCell>{label}</TableCell>
+        <TableCell>{_bool(isArchived)}</TableCell>
+        <TableCell><EtherscanLink address={moduleAddress} prefix={etherscanUrl}/></TableCell>
+    </TableRow>);
+}
+
+function Modules({etherscanUrl, modulesDetails}) {
+    const classes = useStyles();
+    return (
+        <div className={classes.modules}>
+            <Typography align="left" variant="h6" gutterBottom>{"Attached modules"}</Typography>
+            <Table className={classes.table} size="small">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Label</TableCell>
+                        <TableCell>Archived</TableCell>
+                        <TableCell>Address</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {modulesDetails.map(module => <Module key={module.moduleAddress} etherscanUrl={etherscanUrl} {...module} /> )}
+                </TableBody>
+            </Table>
+        </div>
+    )
 }
 
 export default function Token({ owner,
@@ -66,23 +96,14 @@ export default function Token({ owner,
     getInvestorCount,
     currentCheckpointId,
     decimals,
-    modules,
+    modulesDetails,
     etherscanUrl
  }) {
     const classes = useStyles();
-
-    let m = Object.assign({}, modules);
-    totalSupply = Web3.utils.fromWei(totalSupply);
-    Object.keys(m).forEach((key) => {
-        m[key] = m[key].map((address) => {
-            return <EtherscanLink key={key} prefix={etherscanUrl} address={address} />
-        });
-    })
-
     return (
         <div className={classes.root}>
             <Typography align="left" variant="h5" gutterBottom>{name}</Typography>
-            <Table className="table" size="small">
+            <Table className={classes.table} size="small">
                 <TableBody>
                     <Row label='Symbol' value={symbol}/>
                     <Row label='owner' value={<EtherscanLink address={owner} prefix={etherscanUrl}/>}/>
@@ -100,18 +121,7 @@ export default function Token({ owner,
                     <Row label='Current Checkpoint Id' value={currentCheckpointId}/>
                 </TableBody>
             </Table>
-            <Typography align="left" variant="h6" gutterBottom>{"Attached modules"}</Typography>
-            <Table className="table" size="small">
-                <TableBody>
-                    <Row label='Permission' value={m.permission}/>
-                    <Row label='Transfer' value={m.transfer}/>
-                    <Row label='STO' value={m.sto}/>
-                    <Row label='Dividend' value={m.checkpoint}/>
-                    <Row label='Burn' value={m.burn}/>
-                    <Row label='Data Storage' value={m.data}/>
-                    <Row label='Wallet' value={m.wallet}/>
-                </TableBody>
-            </Table>
+            <Modules etherscanUrl={etherscanUrl} modulesDetails={modulesDetails} />
         </div>
     );        
 }
