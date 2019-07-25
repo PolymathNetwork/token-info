@@ -51,7 +51,7 @@ function App() {
   const [web3, setWeb3] = useState();
   const [str, setStr] = useState();
   const [ticker, setTicker] = useState('');
-  const [errors, setErrors] = useState([]);
+  const [error, setError] = useState('');
   const [tokenInfo, setTokenInfo] = useState();
   const [network, setNetwork] = useState('');
   const [etherscanUrl, setEtherscanUrl] = useState('');
@@ -73,7 +73,7 @@ function App() {
         web3 = new Web3(web3.currentProvider);
       }
       else {
-        setErrors(['You have to install MetaMask !']);
+        setError('You have to install MetaMask !');
       }
 
       /////
@@ -92,8 +92,8 @@ function App() {
             setNetwork('kovan');
             setEtherscanUrl('https://kovan.etherscan.io/address')
         } else {
-            setErrors(["Network that you chose is not supported.\n" +
-            "Open MetaMask and choose Mainnet or Kovan."]);
+            setError("Network that you chose is not supported.\n" +
+            "Open MetaMask and choose Mainnet or Kovan.");
             setStr();
             setNetwork();
             setEtherscanUrl();
@@ -120,9 +120,9 @@ function App() {
     try {
       const tokenInfo = await fetchInfo(web3, str, ticker);
       setTokenInfo(tokenInfo);
-      setErrors([]);
+      setError('');
     } catch (error) {
-      setErrors([error.message]);
+      setError(error.message);
     }
     setLoading(false);
   }
@@ -135,7 +135,11 @@ function App() {
             value={ticker}
             style={{ margin: 8 }}
             placeholder="TICKER"
-            fullWidth
+            variant='outlined'
+            margin="dense"
+            inputProps={{
+              maxLength: 10
+            }}
             disabled={!network}
             onChange={changeHandler('ticker')}
           />
@@ -155,7 +159,7 @@ function App() {
             <Token {...tokenInfo} etherscanUrl={etherscanUrl} />
           }
           { loading &&  <CircularProgress className={classes.progress} /> }
-          { errors && <div>{errors[0]}</div>}
+          { error && <div>{error}</div>}
         </form>
       </Container>
     </div>

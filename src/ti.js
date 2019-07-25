@@ -31,6 +31,7 @@ export async function fetchInfo(web3, str, ticker) {
         calls.push(token.methods.controller().call);
         calls.push(token.methods.getInvestorCount().call);
         calls.push(token.methods.currentCheckpointId().call);
+        calls.push(token.methods.decimals().call);
         calls.push(token.methods.getModulesByType(1).call);
         calls.push(token.methods.getModulesByType(2).call);
         calls.push(token.methods.getModulesByType(3).call);
@@ -52,6 +53,7 @@ export async function fetchInfo(web3, str, ticker) {
         calls.push(token.methods.controller().call);
         calls.push(token.methods.getInvestorCount().call);
         calls.push(token.methods.currentCheckpointId().call);
+        calls.push(token.methods.decimals().call);
         calls.push(token.methods.getModulesByType(1).call);
         calls.push(token.methods.getModulesByType(2).call);
         calls.push(token.methods.getModulesByType(3).call);
@@ -99,18 +101,20 @@ export async function fetchInfo(web3, str, ticker) {
         10: controller,
         11: getInvestorCount,
         12: currentCheckpointId,
-        13: permission,
-        14: transfer,
-        15: sto,
-        16: checkpoint,
-        17: burn,
-        18: data,
-        19: wallet
+        13: decimals,
+        14: permission,
+        15: transfer,
+        16: sto,
+        17: checkpoint,
+        18: burn,
+        19: data,
+        20: wallet
     } = result;
 
     data = data ? data : [];
     wallet = wallet ? wallet : [];
-    const props = {      
+    const props = {   
+        address: tokenAddress,
         owner,
         name,
         versionArray,
@@ -124,6 +128,7 @@ export async function fetchInfo(web3, str, ticker) {
         controller,
         getInvestorCount,
         currentCheckpointId,
+        decimals,
         modules: {
             permission,
             transfer,
