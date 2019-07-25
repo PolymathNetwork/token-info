@@ -1,10 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
+import Button from '@material-ui/core/Button';
+import { green } from '@material-ui/core/colors';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
+
 import { fetchInfo } from './ti';
 import Token from './Token';
 import STRAbi from './abis/SecurityTokenRegistry.json';
 import './App.css';
 import { STR_MAINNET, STR_KOVAN } from './constants';
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: 'relative',
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700],
+    },
+  },
+  fabProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: -6,
+    left: -6,
+    zIndex: 1,
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
+}));
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -15,6 +55,8 @@ function App() {
   const [tokenInfo, setTokenInfo] = useState();
   const [network, setNetwork] = useState('');
   const [etherscanUrl, setEtherscanUrl] = useState('');
+
+  const classes = useStyles();
 
   useEffect(() => {
     async function initWeb3() {
@@ -67,7 +109,7 @@ function App() {
     initWeb3();
   }, []);
 
-  const changeHandler = (event) => {
+  const changeHandler = name => event => {
     setTicker(event.target.value);
   }
 
@@ -87,21 +129,34 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <Container maxWidth="sm" className="root">
         <form onSubmit={submitHandler}>
-          <input 
-            type="text"
-            name="ticker"
-            value={ticker}
+          <TextField
+            style={{ margin: 8 }}
+            placeholder="TICKER"
+            fullWidth
             disabled={!network}
-            onChange={changeHandler} />
-          <input type="submit" value="Submit" disabled={!ticker || !network} />
-          { tokenInfo && <Token {...tokenInfo} etherscanUrl={etherscanUrl} />}
-          { loading &&  <span>Loading...</span> }
-          {/* @TODO display all errors */}
+            onChange={changeHandler('ticker')}
+          />
+
+          <div className={classes.wrapper}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={loading || !ticker || !network}
+              onClick={submitHandler}
+            >
+              submit
+            </Button>
+          </div>
+
+          { tokenInfo && 
+            <Token {...tokenInfo} etherscanUrl={etherscanUrl} />
+          }
+          { loading &&  <CircularProgress className={classes.progress} /> }
           { errors && <div>{errors[0]}</div>}
         </form>
-      </header>
+      </Container>
     </div>
   );
 }
