@@ -29,12 +29,16 @@ export function EtherscanLink({ prefix, address }) {
     return <Link href={`${prefix}/${address}`}>{address}</Link>;
 }
 
+export function Row({label, value}) {
+    return <TableRow><TableCell>{label}</TableCell><TableCell>{value}</TableCell></TableRow>
+}
+
 export function Label({children}) {
-    return <Typography variant="button" display="block">{children}</Typography>
+    return <TableCell><Typography variant="button" display="block">{children}</Typography></TableCell>
 }
 
 export function Value({children, monospace}) {
-    return <Box fontFamily={monospace ? "Monospace" : "fontFamily"}>{children}</Box>
+    return <TableCell><Box fontFamily={monospace ? "Monospace" : "fontFamily"}>{children}</Box></TableCell>
 }
 
 export default function Token({ owner,
@@ -68,87 +72,30 @@ export default function Token({ owner,
             <Typography align="left" variant="h5" gutterBottom>{name}</Typography>
             <Table className="table" size="small">
                 <TableBody>
-                    <TableRow>
-                        <TableCell><Label>owner</Label></TableCell>
-                        <TableCell>{<EtherscanLink address={owner} prefix={etherscanUrl}/>}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Version</Label></TableCell>
-                        <TableCell><Value>{versionArray.join('.')}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Token Details</Label></TableCell>
-                        <TableCell><Value>{tokenDetails}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Symbol</Label></TableCell>
-                        <TableCell><Value>{symbol}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Granularity</Label></TableCell>
-                        <TableCell><Value>{granularity}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Total Supply</Label></TableCell>
-                        <TableCell><Value>{totalSupply} {symbol}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Transfers Frozen?</Label></TableCell>
-                        <TableCell><Value>{transfersFrozen? 'True' : 'False'}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Issuable?</Label></TableCell>
-                        <TableCell><Value>{isIssuable ? 'True' : 'False'}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Controller Disabled?</Label></TableCell>
-                        <TableCell><Value>{controllerDisabled ? 'True' : 'False'}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Controller</Label></TableCell>
-                        <TableCell><Value>{controller === '0x0000000000000000000000000000000000000000' ? 'None' : controller}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Investor Count</Label></TableCell>
-                        <TableCell><Value>{getInvestorCount}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Current Checkpoint Id</Label></TableCell>
-                        <TableCell><Value>{currentCheckpointId}</Value></TableCell>
-                    </TableRow>
+                    <Row label='owner' value={<EtherscanLink address={owner} prefix={etherscanUrl}/>}/>
+                    <Row label='Version' value={versionArray.join('.')}/>
+                    <Row label='Token Details' value={tokenDetails}/>
+                    <Row label='Symbol' value={symbol}/>
+                    <Row label='Granularity' value={granularity}/>
+                    <Row label='Total Supply' value={totalSupply}/>
+                    <Row label='Transfers Frozen?' value={transfersFrozen? 'True' : 'False'}/>
+                    <Row label='Issuable?'value={isIssuable ? 'True' : 'False'}/>
+                    <Row label='Controller Disabled?' value={controllerDisabled ? 'True' : 'False'}/>
+                    <Row label='Controller' value={controller === '0x0000000000000000000000000000000000000000' ? 'None' : controller}/>
+                    <Row label='Investor Count' value={getInvestorCount}/>
+                    <Row label='Current Checkpoint Id' value={currentCheckpointId}/>
                 </TableBody>
             </Table>
             <Typography align="left" variant="h6" gutterBottom>{"Attached modules"}</Typography>
             <Table className="table" size="small">
                 <TableBody>
-                    <TableRow>
-                        <TableCell><Label>Permission modules</Label></TableCell>
-                        <TableCell><Value>{m.permission}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Transfer modules</Label></TableCell>
-                        <TableCell><Value>{m.transfer}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>STOs</Label></TableCell>
-                        <TableCell><Value>{m.sto}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Dividend modules</Label></TableCell>
-                        <TableCell><Value>{m.checkpoint}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Burn modules</Label></TableCell>
-                        <TableCell><Value>{m.burn}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Data Storage modules</Label></TableCell>
-                        <TableCell><Value>{m.data}</Value></TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell><Label>Wallet modules</Label></TableCell>
-                        <TableCell><Value>{m.wallet}</Value></TableCell>
-                    </TableRow>
+                    <Row label='Permission modules' value={m.permission}/>
+                    <Row label='Transfer modules' value={m.transfer}/>
+                    <Row label='STOs' value={m.sto}/>
+                    <Row label='Dividend modules' value={m.checkpoint}/>
+                    <Row label='Burn modules' value={m.burn}/>
+                    <Row label='Data Storage modules' value={m.data}/>
+                    <Row label='Wallet modules' value={m.wallet}/>
                 </TableBody>
             </Table>
         </div>

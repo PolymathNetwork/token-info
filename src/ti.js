@@ -8,7 +8,7 @@ export async function fetchInfo(web3, str, ticker) {
     let tokenAddress = await str.methods.getSecurityTokenAddress(ticker).call();
 
     if (tokenAddress === zero_address) {
-        throw new Error('Symbol does not exist') 
+        throw new Error('Symbol not found') 
     }
 
     let token = new web3.eth.Contract(securityToken3ABI, tokenAddress);
