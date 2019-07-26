@@ -159,6 +159,7 @@ export async function fetchInfo(web3, str, ticker) {
         }
     }
 
+    totalSupply = web3.utils.fromWei(totalSupply);
 
     const props = {   
         address: tokenAddress,
