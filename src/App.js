@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
+
+
+import { ReactComponent as Logo } from './polymath.svg';
+
+import { makeStyles } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from "@material-ui/core";
+
 import Button from '@material-ui/core/Button';
 import { green } from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
@@ -12,6 +19,14 @@ import Token from './Token';
 import SecurityTokenRegistryABI from './abis/SecurityTokenRegistry.json'
 import './App.css';
 import { STR_MAINNET, STR_KOVAN } from './constants';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#1348E4'
+    }
+  },
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -133,41 +148,44 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <Container maxWidth="sm" className="root">
-        <form onSubmit={submitHandler}>
-          <TextField
-            value={ticker}
-            style={{ margin: 8 }}
-            placeholder="TICKER"
-            variant='outlined'
-            margin="dense"
-            inputProps={{
-              maxLength: 10
-            }}
-            disabled={!network}
-            onChange={changeHandler}
-          />
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <Container maxWidth="sm" className="root">
+          <Logo />
+          <form onSubmit={submitHandler}>
+            <TextField
+              value={ticker}
+              style={{ margin: 8 }}
+              placeholder="TICKER"
+              variant='outlined'
+              margin="dense"
+              inputProps={{
+                maxLength: 10
+              }}
+              disabled={!network}
+              onChange={changeHandler}
+            />
 
-          <div className={classes.wrapper}>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={loading || !ticker || !network}
-              onClick={submitHandler}
-            >
-              submit
-            </Button>
-          </div>
+            <div className={classes.wrapper}>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={loading || !ticker || !network}
+                onClick={submitHandler}
+              >
+                submit
+              </Button>
+            </div>
 
-          { tokenInfo && 
-            <Token {...tokenInfo} etherscanUrl={etherscanUrl} />
-          }
-          { loading &&  <CircularProgress className={classes.progress} /> }
-          { error && <div>{error}</div>}
-        </form>
-      </Container>
-    </div>
+            { tokenInfo && 
+              <Token {...tokenInfo} etherscanUrl={etherscanUrl} />
+            }
+            { loading &&  <CircularProgress className={classes.progress} /> }
+            { error && <div>{error}</div>}
+          </form>
+        </Container>
+      </div>
+    </ThemeProvider>
   );
 }
 
