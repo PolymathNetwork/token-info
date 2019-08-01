@@ -45,15 +45,19 @@ function _bool(val) {
     return val ? 'true' : 'false';
 }
 
-function Module({etherscanUrl, moduleAddress, moduleName, factoryAddress, label, isArchived, moduleTypes}) {
-  return (
+function Module({etherscanUrl, moduleAddress, moduleName, factoryAddress, paused, label, isArchived, moduleTypes}) {
+    if (label) {
+        moduleName = `${moduleName (label)}`;
+    }
+
+    return (
     <TableRow>
         <TableCell>
             <Typography variant="button">{moduleTypes}</Typography>
         </TableCell>
         <TableCell>{moduleName}</TableCell>
-        <TableCell>{label}</TableCell>
         <TableCell>{_bool(isArchived)}</TableCell>
+        <TableCell>{_bool(paused)}</TableCell>
         <TableCell><EtherscanLink address={moduleAddress} prefix={etherscanUrl}/></TableCell>
     </TableRow>);
 }
@@ -67,9 +71,9 @@ function Modules({etherscanUrl, modulesDetails}) {
                 <TableHead>
                     <TableRow>
                         <TableCell>Type</TableCell>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Label</TableCell>
+                        <TableCell>Name (label?)</TableCell>
                         <TableCell>Archived</TableCell>
+                        <TableCell>Paused</TableCell>
                         <TableCell>Address</TableCell>
                     </TableRow>
                 </TableHead>
@@ -96,6 +100,9 @@ export default function Token({ owner,
     getInvestorCount,
     currentCheckpointId,
     decimals,
+    treasuryWallet,
+    dataStore,
+    documents,
     modulesDetails,
     etherscanUrl
  }) {
@@ -108,6 +115,14 @@ export default function Token({ owner,
                     <Row label='Symbol' value={symbol}/>
                     <Row label='owner' value={<EtherscanLink address={owner} prefix={etherscanUrl}/>}/>
                     <Row label='address' value={<EtherscanLink address={address} prefix={etherscanUrl}/>}/>
+                    <Row label='Treasury Wallet' value={treasuryWallet ?
+                        <EtherscanLink address={treasuryWallet} prefix={etherscanUrl}/> : 'N/A'
+                    }/>
+                    <Row label='Data Store' value={dataStore ?
+                        <EtherscanLink address={dataStore} prefix={etherscanUrl}/> : 'N/A'
+                    }/>
+                    <Row label='Documents' value={documents ?
+                        documents.join(', ') : 'N/A'}/>
                     <Row label='Version' value={versionArray.join('.')}/>
                     <Row label='Token Details' value={tokenDetails}/>
                     <Row label='divisible' value={_bool(granularity === '1')}/>

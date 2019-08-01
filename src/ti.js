@@ -1,5 +1,6 @@
 import securityToken2ABI from './abis/SecurityToken2.json';
 import securityToken3ABI from './abis/SecurityToken3.json';
+import moduleABI from './abis/Module.json';
 import { zero_address } from './constants';
 
 export async function fetchInfo(web3, str, ticker) {
@@ -60,8 +61,9 @@ export async function fetchInfo(web3, str, ticker) {
         calls.push(token.methods.getModulesByType(5).call);
         calls.push(token.methods.getModulesByType(6).call);
         calls.push(token.methods.getModulesByType(7).call);
-        calls.push(token.methods.getModulesByType(8).call);
-        calls.push(token.methods.getModulesByType(9).call);
+        calls.push(token.methods.getTreasuryWallet().call);
+        calls.push(token.methods.dataStore().call);
+        calls.push(token.methods.getAllDocuments().call);
     }
     else {
         throw new Error(`Token version ${version.join('.')} is not supported.`) 
@@ -78,26 +80,6 @@ export async function fetchInfo(web3, str, ticker) {
     })
     batch[batch.length - 1].execute();
     const result = await Promise.all(promises);
-
-    // @see https://github.com/PolymathNetwork/polymath-core/blob/dev-3.1.0/contracts/tokens/SecurityTokenStorage.sol#L11
-    // PERMISSION_KEY = 1;
-    // TRANSFER_KEY = 2;
-    // MINT_KEY = 3;
-    // CHECKPOINT_KEY = 4;
-    // BURN_KEY = 5;
-    // DATA_KEY = 6;
-    // WALLET_KEY = 7;
-
-    const modulesMap = [
-        '',
-        'permission',
-        'transfer',
-        'sto',
-        'checkpoint',
-        'burn',
-        'data',
-        'wallet'
-    ]
 
     let {
         0: owner,
@@ -120,19 +102,46 @@ export async function fetchInfo(web3, str, ticker) {
         17: checkpoint,
         18: burn,
         19: data,
-        20: wallet
+        20: wallet,
+        21: treasuryWallet,
+        22: dataStore,
+        23: documents
     } = result;
 
+    /////////////////////////////////////////
+    // Post-processing
+    /////////////////////////////////////////
 
+    documents = documents ? documents.map(doc => web3.utils.hexToUtf8(doc)) : null;
+    totalSupply = web3.utils.fromWei(totalSupply);
 
-    /**
-     * Backward compatibility
-     */
-    if (version[0] == 2) {
+    /////////////////////////////////////////
+    // Backward compatibility
+    /////////////////////////////////////////
+
+     if (version[0] === '2') {
         data = data ? data : [];
         wallet = wallet ? wallet : [];
         isIssuable = !isIssuable;
+        treasuryWallet = null;
+        dataStore = null;
+        documents = null;
     }
+
+    /////////////////////////////////////////
+    // Modules
+    /////////////////////////////////////////
+
+    const modulesMap = [
+        '',
+        'permission',
+        'transfer',
+        'sto',
+        'checkpoint',
+        'burn',
+        'data',
+        'wallet'
+    ];
 
     const modules = [
         permission,
@@ -145,10 +154,13 @@ export async function fetchInfo(web3, str, ticker) {
     ];
 
     const modulesDetails = [];
-
     for (const moduleAdresses of modules) {
         for (const moduleAddress of moduleAdresses) {
+            const module = new web3.eth.Contract(moduleABI, moduleAddress);
+            const paused = await module.methods.paused().call();
+
             let moduleDetails = await token.methods.getModule(moduleAddress).call();
+            moduleDetails.paused = paused;
             moduleDetails.moduleName = web3.utils.hexToUtf8(moduleDetails.moduleName);
             moduleDetails.label = moduleDetails.label ?
                 web3.utils.hexToUtf8(moduleDetails.label) :
@@ -160,6 +172,7 @@ export async function fetchInfo(web3, str, ticker) {
 
     const uniqueModules = [];
     const map = new Map();
+    // Remove duplicate
     for (const item of modulesDetails) {
         if(!map.has(item.moduleAddress)){
             map.set(item.moduleAddress, true); 
@@ -167,7 +180,9 @@ export async function fetchInfo(web3, str, ticker) {
         }
     }
 
-    totalSupply = web3.utils.fromWei(totalSupply);
+    /////////////////////////////////////////
+    // Prep props
+    /////////////////////////////////////////
 
     const props = {   
         address: tokenAddress,
@@ -185,6 +200,9 @@ export async function fetchInfo(web3, str, ticker) {
         getInvestorCount,
         currentCheckpointId,
         decimals,
+        treasuryWallet,
+        dataStore,
+        documents,
         modulesDetails: uniqueModules
     };
     return props;
