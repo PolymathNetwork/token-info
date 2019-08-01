@@ -123,8 +123,16 @@ export async function fetchInfo(web3, str, ticker) {
         20: wallet
     } = result;
 
-    data = data ? data : [];
-    wallet = wallet ? wallet : [];
+
+
+    /**
+     * Backward compatibility
+     */
+    if (version[0] == 2) {
+        data = data ? data : [];
+        wallet = wallet ? wallet : [];
+        isIssuable = !isIssuable;
+    }
 
     const modules = [
         permission,
