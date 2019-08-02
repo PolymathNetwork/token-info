@@ -86,7 +86,7 @@ function Modules({etherscanUrl, modulesDetails}) {
     return (
         <Paper className={classes.modules} style={{height: '100%'}} elevation={10}>
             <Box pl={4} pt={3} pb={3}>
-                <Typography align="left" variant="h4">{"Attached modules"}</Typography>
+                <Typography align="left" variant="h5">{"Attached modules"}</Typography>
             </Box>
             <Box className={classes.tableWrapper}>
                 <Table className={classes.table} size="small">
@@ -134,7 +134,7 @@ export default function Token({ owner,
         <div className={classes.root}>
             <Paper padding={50} style={{height: '100%'}} elevation={10}>
                 <Box pl={4} pt={3} pb={3}>
-                    <Typography align="left" variant="h4">{name}</Typography>
+                    <Typography align="left" variant="h5">{name}</Typography>
                 </Box>
                 <Box className={classes.tableWrapper}>
                     <Table className={classes.table} size="small">
