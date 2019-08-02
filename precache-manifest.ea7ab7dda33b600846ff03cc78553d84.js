@@ -1,27 +1,31 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "d212c42bb602bb8202205e2738cf4a78",
+    "revision": "d645f9afb7e7062af5753afefb2b590a",
     "url": "/token-info/index.html"
   },
   {
-    "revision": "bc610d282a10dd3b2353",
+    "revision": "d74ba45451e6e9b1d3af",
     "url": "/token-info/static/css/2.52060dab.chunk.css"
   },
   {
-    "revision": "aa4d785b5742ae4c6648",
-    "url": "/token-info/static/css/main.718347eb.chunk.css"
+    "revision": "6bfba7d2aa79a207bf41",
+    "url": "/token-info/static/css/main.3a34d45d.chunk.css"
   },
   {
-    "revision": "bc610d282a10dd3b2353",
-    "url": "/token-info/static/js/2.3d478f33.chunk.js"
+    "revision": "d74ba45451e6e9b1d3af",
+    "url": "/token-info/static/js/2.6580ac9d.chunk.js"
   },
   {
-    "revision": "aa4d785b5742ae4c6648",
-    "url": "/token-info/static/js/main.a9dac703.chunk.js"
+    "revision": "6bfba7d2aa79a207bf41",
+    "url": "/token-info/static/js/main.12b9d03a.chunk.js"
   },
   {
     "revision": "bd12c026a8d6c0a108d5",
     "url": "/token-info/static/js/runtime~main.403dd6ce.js"
+  },
+  {
+    "revision": "74dbd3721e04c3ba38c549d6c957c1bb",
+    "url": "/token-info/static/media/polymath.74dbd372.svg"
   },
   {
     "revision": "5cb7edfceb233100075dc9a1e12e8da3",
