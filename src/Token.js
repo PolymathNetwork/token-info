@@ -84,7 +84,7 @@ function Module({etherscanUrl, moduleAddress, moduleName, factoryAddress, paused
 function Modules({etherscanUrl, modulesDetails}) {
     const classes = useStyles();
     return (
-        <Paper className={classes.modules} style={{height: '100%'}} elevation={10}>
+        <Paper className={classes.modules} style={{height: '100%', overflow: 'auto'}} elevation={10}>
             <Box pl={4} pt={3} pb={3}>
                 <Typography align="left" variant="h5">{"Attached modules"}</Typography>
             </Box>
@@ -132,7 +132,7 @@ export default function Token({ owner,
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            <Paper padding={50} style={{height: '100%'}} elevation={10}>
+            <Paper padding={50} style={{height: '100%', overflow: 'auto'}} elevation={10}>
                 <Box pl={4} pt={3} pb={3}>
                     <Typography align="left" variant="h5">{name}</Typography>
                 </Box>
