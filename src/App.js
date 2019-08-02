@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import Button from '@material-ui/core/Button';
-import { green } from '@material-ui/core/colors';
+
+
+import { ReactComponent as Logo } from './polymath.svg';
+
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
+import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from "@material-ui/core";
+
+import { Button, Box, Typography, CircularProgress, TextField, AppBar, Container }
+  from '@material-ui/core';
+
 
 import { fetchInfo } from './ti';
 import Token from './Token';
@@ -13,37 +18,47 @@ import SecurityTokenRegistryABI from './abis/SecurityTokenRegistry.json'
 import './App.css';
 import { STR_MAINNET, STR_KOVAN } from './constants';
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#1348E4'
+    }
+  }
+  
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
+    flexGrow: 1,
+    height: '100%',
+    minHeight: '100%',
+    paddingBottom: 50,
+    paddingTop: 50,
+    borderBottom: 3
   },
-  wrapper: {
-    margin: theme.spacing(1),
-    position: 'relative',
+  container: {
+    height: '100%'
   },
-  buttonSuccess: {
-    backgroundColor: green[500],
-    '&:hover': {
-      backgroundColor: green[700],
-    },
+  form: {
+    width: 300,
+    paddingRight: 30
   },
-  fabProgress: {
-    color: green[500],
+  formItem: {
+    paddingBottom: 15
+  },
+  topBar: {
+    background: 'transparent',
+    boxShadow: 'none'
+  },
+  footer: {
     position: 'absolute',
-    top: -6,
-    left: -6,
-    zIndex: 1,
-  },
-  buttonProgress: {
-    color: green[500],
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
+    top: 'auto',
+    bottom: 0,
+    color: 'inherit',
+    background: 'transparent',
+    boxShadow: 'none',
+    width: '100%'
+  }
 }));
 
 function App() {
@@ -133,41 +148,77 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <Container maxWidth="sm" className="root">
-        <form onSubmit={submitHandler}>
-          <TextField
-            value={ticker}
-            style={{ margin: 8 }}
-            placeholder="TICKER"
-            variant='outlined'
-            margin="dense"
-            inputProps={{
-              maxLength: 10
-            }}
-            disabled={!network}
-            onChange={changeHandler}
-          />
+    <ThemeProvider theme={theme}>
+      <AppBar className={classes.topBar} position="static">
+        <Box paddingLeft={14} paddingRight={14} paddingTop={5} paddingBottom={5}>
+          <Logo />
+        </Box>
+      </AppBar>
+      <Container fixed>
+        <Box display="flex" flexDirection="row" className={classes.root}>
+          <Box class={classes.form}>
+            <form onSubmit={submitHandler}>
+              <Box class={classes.formItem}>
+                <Typography component="h4" variant="h4">
+                Security Token Information 
+                </Typography>
+              </Box>
+              <Box class={classes.formItem}>
+                <Typography component="p" color="textSecondary">
+                Retrieve information about your security token by typing its symbol below.
+                </Typography>
+              </Box>
+              <Box class={classes.formItem}>
+                <TextField
+                  label="Symbol"
+                  fullWidth
+                  // // margin="normal"
+                  value={ticker}
+                  // style={{ backgroundColor: '#FFFFFF' }}
+                  placeholder="Enter your token symbol"
+                  inputProps={{
+                    maxLength: 10,
+                  }}
+                  disabled={!network}
+                  onChange={changeHandler}
+                  label="Symbol"
+                  className={classes.textField}
+                  margin="normal"
+                />
+              </Box>
 
-          <div className={classes.wrapper}>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={loading || !ticker || !network}
-              onClick={submitHandler}
-            >
-              submit
-            </Button>
-          </div>
+              <Box class={classes.formItem}>  
+                <Button
+                  fullWidth
+                  size="large"
+                  variant="contained"
+                  color="primary"
+                  disabled={loading || !ticker || !network}
+                  onClick={submitHandler}
+                >
+                  Check
+                </Button>
+              </Box>
+            </form>
+          </Box>
 
-          { tokenInfo && 
-            <Token {...tokenInfo} etherscanUrl={etherscanUrl} />
-          }
-          { loading &&  <CircularProgress className={classes.progress} /> }
-          { error && <div>{error}</div>}
-        </form>
+          <Box flexGrow={1}>  
+            { loading &&  <CircularProgress className={classes.progress} /> }
+            { error && <Typography color="error">{error}</Typography>}
+            { tokenInfo && 
+              <Token {...tokenInfo} etherscanUrl={etherscanUrl} />
+            }
+          </Box>
+        </Box>
       </Container>
-    </div>
+      <footer  className={classes.footer}>
+        <Box paddingLeft={14} paddingRight={14} paddingTop={3} paddingBottom={3}>
+          <Typography color="textSecondary" component="p">
+            2019 © Polymath
+          </Typography>
+        </Box>
+      </footer>
+    </ThemeProvider>
   );
 }
 
