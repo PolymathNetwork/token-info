@@ -126,7 +126,7 @@ function App() {
 
   const changeHandler = event => {
 
-    const pattern = RegExp('^[a-zA-Z0-9_]*$');
+    const pattern = RegExp('^[a-zA-Z0-9_-]*$');
     if (pattern.test(event.target.value)) {
       setTicker(event.target.value.toUpperCase());
     }
