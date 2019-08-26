@@ -1,6 +1,6 @@
 # Install & Run
 
-- Make sure that Metamask plugin is installed on your browser. It serves a node provider and injects Web3 into web browser pages.
+- Make sure that Metamask plugin is installed on your browser. It serves as a node provider, and it injects Web3 into web browser pages.
   - Select either `Mainnet` or `Kovan` network.
 - Clone this repo: `git clone https://github.com/PolymathNetwork/token-info.git && cd token-info`.
 - Install dependencies: `npm install`.
